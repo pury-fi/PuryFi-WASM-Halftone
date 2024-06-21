@@ -1,2 +1,2 @@
 # PuryFi-WASM-Halftone
-Halftone feature made in RUST
+Rust source code for PuryFi's halftone pixelation feature.
