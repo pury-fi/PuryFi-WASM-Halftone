@@ -1,7 +1,8 @@
-# PuryFi-WASM-Halftone
-Rust source code for PuryFi's halftone pixelation feature.
+# PuryFi's WASM Halftone
 
-## Prerequisites
+PuryFi's halftone feature as a WASM module.
+
+## Building Prerequisites
 
 Before building, ensure you have the following tools installed:
 
@@ -12,10 +13,27 @@ Before building, ensure you have the following tools installed:
 Cargo, Rust's package manager, will be installed automatically with Rust.
 
 ## Building
-Just execute the following command at the root directory of this repository:
-```
-wasm-pack build --release --target no-modules
-```
-Which will output the `halftone_processor_bg.wasm` and `halftone_processor.js` files to `pkg/`.
 
-Additionally, the simple [`build.sh`](/build.sh) script on Linux or [`build.bat`](/build.bat) script on Windows can be used to execute the previous command and then copy the outputted files of our interest over to the destination the extension expects them to be in: `components/`. This script assumes the root directory of the extension to be found at `../../` from the root directory of this repository.
+To build the project, follow these steps:
+
+1. Clone the repository and enter it if you haven't already:
+
+   ```
+   git clone https://github.com/pury-fi/PuryFi-WASM-Halftone.git
+   cd PuryFi-Wasm-Halftone
+   ```
+
+2. Run the appropriate build script based on your operating system:
+
+   -  For Windows, run:
+
+      ```
+      ./build.bat
+      ```
+
+   -  For Unix-based systems (Linux, macOS), run:
+      ```
+      ./build.sh
+      ```
+
+The resulting npm modules for the browser and node will then be found under `npmbrowser` and `npmnode` respectively.

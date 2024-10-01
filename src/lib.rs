@@ -1,15 +1,8 @@
-#![allow(unused_variables)]
 #![allow(clippy::too_many_arguments)]
 
 use std::{cmp, f64};
-use wasm_bindgen::{prelude::*, Clamped};
-use web_sys::{CanvasRenderingContext2d, ImageData};
-
-// macro_rules! log {
-//     ( $( $t:tt )* ) => {
-//         web_sys::console::log_1(&format!( $( $t )* ).into());
-//     }
-// }
+use wasm_bindgen::prelude::*;
+use web_sys::js_sys::{self, Uint8Array};
 
 fn sample_channel(
     data: &[u8],
@@ -100,8 +93,6 @@ fn add_fill_circle_path(path_data: &mut [f64], w: usize, h: usize, x: f64, y: f6
     let end_x = cmp::min(w, (x + radius + 1.0).ceil() as usize) as usize;
     let end_y = cmp::min(h, (y + radius + 1.0).ceil() as usize) as usize;
 
-    let radius_sq = radius.powi(2);
-
     for j in start_y..end_y {
         for i in start_x..end_x {
             let dist = ((i as f64 - x).powi(2) + (j as f64 - y).powi(2)).sqrt();
@@ -169,7 +160,6 @@ fn paint_darken_fill_circle(
     r: u8,
     g: u8,
     b: u8,
-    alpha: f64,
     x: f64,
     y: f64,
     radius: f64,
@@ -249,10 +239,6 @@ fn for_each_rotated_grid_point_in_rect(
         .iter()
         .map(|point| point[1])
         .fold(f64::NEG_INFINITY, f64::max);
-    let max_x = boundaries
-        .iter()
-        .map(|point| point[0])
-        .fold(f64::NEG_INFINITY, f64::max);
 
     let inv_cos = (-radians).cos();
     let inv_sin = (-radians).sin();
@@ -284,14 +270,17 @@ fn for_each_rotated_grid_point_in_rect(
 
 #[wasm_bindgen]
 pub fn halftone_pixel(
-    ctx: &CanvasRenderingContext2d,
-    src_ctx: &CanvasRenderingContext2d,
+    src_data: Uint8Array,
+    dot_size: f64,
+    dot_res: f64,
+    data_x: f64,
+    data_y: f64,
+    data_w: f64,
+    data_h: f64,
     rect_x: f64,
     rect_y: f64,
     rect_w: f64,
     rect_h: f64,
-    px_size: f64,
-    density: f64,
     r: u8,
     g: u8,
     b: u8,
@@ -302,26 +291,11 @@ pub fn halftone_pixel(
     bg_alpha: f64,
     accurate_sampling: bool,
     cmyk_color_mode: bool,
-) {
-    let dot_size = (px_size.powf(2.0) / f64::consts::PI).sqrt();
-    let dot_res = (dot_size / density).max(1.0).round();
+) -> Uint8Array {
+    console_error_panic_hook::set_once();
 
-    let canvas_w = ctx.canvas().unwrap().width() as i32;
-    let canvas_h = ctx.canvas().unwrap().height() as i32;
-
-    let data_x = (rect_x - dot_size).floor().max(0.0);
-    let data_y = (rect_y - dot_size).floor().max(0.0);
-    let data_w =
-        ((rect_x + rect_w + dot_size).min(canvas_w as f64 + dot_size) - rect_x + dot_size).ceil();
-    let data_h =
-        ((rect_y + rect_h + dot_size).min(canvas_h as f64 + dot_size) - rect_y + dot_size).ceil();
-
-    let mut src_data = src_ctx
-        .get_image_data(data_x, data_y, data_w, data_h)
-        .unwrap()
-        .data()
-        .to_vec();
-
+    let mut src_data = src_data.to_vec();
+    
     if cmyk_color_mode {
         let mut data = vec![255_u8; (data_w * data_h * 4.0) as usize];
         for (angle, (r, g, b), channel, is_key) in [
@@ -362,7 +336,6 @@ pub fn halftone_pixel(
                         r,
                         g,
                         b,
-                        alpha,
                         rot_x - data_x,
                         rot_y - data_y,
                         circle_r,
@@ -371,13 +344,7 @@ pub fn halftone_pixel(
             );
         }
 
-        let out_data = ImageData::new_with_u8_clamped_array_and_sh(
-            Clamped(&data),
-            data_w as u32,
-            data_h as u32,
-        )
-        .unwrap();
-        ctx.put_image_data(&out_data, data_x, data_y).unwrap();
+        unsafe { js_sys::Uint8Array::view_mut_raw(data.as_mut_ptr(), data.len()) }
     } else {
         let mut path_data = vec![0_f64; data_w as usize * data_h as usize];
         for_each_rotated_grid_point_in_rect(
@@ -426,12 +393,7 @@ pub fn halftone_pixel(
             alpha,
         );
 
-        let out_data = ImageData::new_with_u8_clamped_array_and_sh(
-            Clamped(&src_data),
-            data_w as u32,
-            data_h as u32,
-        )
-        .unwrap();
-        ctx.put_image_data(&out_data, data_x, data_y).unwrap();
+        unsafe { js_sys::Uint8Array::view_mut_raw(src_data.as_mut_ptr(), src_data.len()) }
     }
 }
+

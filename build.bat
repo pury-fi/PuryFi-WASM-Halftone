@@ -1,5 +1,5 @@
 @echo off
 
-wasm-pack build --release --target no-modules
-copy pkg\halftone_processor_bg.wasm ..\..\components\
-copy pkg\halftone_processor.js ..\..\components\
+rmdir /s /q npm
+wasm-pack build --out-dir npm/browser --out-name index --release --target web
+wasm-pack build --out-dir npm/node --out-name index --release --target nodejs
