@@ -1,0 +1,11 @@
+{
+  "name": "puryfi-wasm-halftone-node",
+  "version": "2.0.0",
+  "files": [
+    "index_bg.wasm",
+    "index.js",
+    "index.d.ts"
+  ],
+  "main": "index.js",
+  "types": "index.d.ts"
+}

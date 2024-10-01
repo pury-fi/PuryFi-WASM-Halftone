@@ -1,0 +1,14 @@
+{
+  "name": "puryfi-wasm-halftone-browser",
+  "version": "2.0.0",
+  "files": [
+    "index_bg.wasm",
+    "index.js",
+    "index.d.ts"
+  ],
+  "module": "index.js",
+  "types": "index.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
