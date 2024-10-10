@@ -1,14 +1,16 @@
 {
    "name": "puryfi-wasm-halftone",
    "version": "2.0.0",
+   "main": "./dist/node/halftone.js",
+   "browser": "./dist/browser/halftone.js",
    "exports": {
       ".": {
          "node": {
-            "types": "./dist/node/index.d.ts",
-            "default": "./dist/node/index.js"
+            "types": "./dist/node/halftone.d.ts",
+            "default": "./dist/node/halftone.js"
          },
-         "types": "./dist/browser/index.d.ts",
-         "default": "./dist/browser/index.js"
+         "types": "./dist/browser/halftone.d.ts",
+         "default": "./dist/browser/halftone.js"
       }
    },
    "files": [

@@ -1,8 +1,8 @@
 @echo off
 
 rmdir /s /q dist
-wasm-pack build --out-dir dist/browser --out-name index --release --target web
-wasm-pack build --out-dir dist/node --out-name index --release --target nodejs
+wasm-pack build --out-dir dist/browser --out-name halftone --release --target web
+wasm-pack build --out-dir dist/node --out-name halftone --release --target nodejs
 del dist\browser\.gitignore
 del dist\node\.gitignore
 del dist\browser\package.json
